@@ -69,9 +69,9 @@ docker-compose run crawler https://example.com --crawl-all --max-pages 5
 
 In this command:
 
-- Replace https://example.com with the base URL you want to crawl.
-- The --crawl-all flag tells the crawler to fetch all pages found in the sitemap.
-- The --max-pages 5 argument limits the crawling process to a maximum of 5 pages.
+- Replace `https://example.com` with the base URL you want to crawl.
+- The `--crawl-all` flag tells the crawler to fetch all pages found in the sitemap.
+- The `--max-pages` 5 argument limits the crawling process to a maximum of 5 pages.
 
 
 ## Markdown Generation
