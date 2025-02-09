@@ -56,7 +56,7 @@ This application can also be run using Docker and Docker Compose.
 To build the Docker image without using the cache, run the following command:
 
 ```
-docker-compose build --no-cache
+docker-compose -p my_custom_name build --no-cache
 ```
 
 ### Running the Docker Container
