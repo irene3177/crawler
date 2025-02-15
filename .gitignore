@@ -1,0 +1,35 @@
+# Ignore Python cache files
+__pycache__/
+*.py[cod]
+
+.DS_Store
+
+# Ignore virtual environments
+crawled_data/
+venv/
+ENV/
+env/
+.env
+.env.local
+
+# Ignore log files
+logs/
+*.log
+
+# Ignore the Windsurf IDE project settings or configuration files
+.windsurf/
+
+# Ignore Python files (if you are using Python)
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore IDE configurations
+.vscode/
+.idea/
+
+# Ignore compiled files
+*.egg
+*.egg-info/
+dist/
+build/

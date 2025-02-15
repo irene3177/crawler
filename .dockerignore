@@ -1,0 +1,28 @@
+# Python cache
+__pycache__
+*.pyc
+
+.DS_Store
+
+# Virtual environments
+crawled_data/
+venv/
+.env/
+
+# Logs
+*.log
+
+# SQLite databases
+*.sqlite
+
+# IDE/Editor settings
+.vscode/
+.idea/
+.windsurf/
+
+# Test files
+tests/
+
+# Local configuration files
+config/local_config.py
+
