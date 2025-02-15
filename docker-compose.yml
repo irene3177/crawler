@@ -1,8 +1,8 @@
-version: '3.8'
-
 services:
   crawler:
-    build: .
+    build: 
+      context: .
+    image: crawler
     volumes:
       - ./crawled_data:/app/crawled_data
-    command: python -m src.main  
+    command: python -m src.main
