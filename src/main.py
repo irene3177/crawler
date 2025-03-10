@@ -35,6 +35,8 @@ async def main():
                         help='Whether to crawl all pages (default: false)')
     parser.add_argument('--max-pages', type=int, default=50,
                         help='Maximum number of pages to crawl (default: 50)')
+    parser.add_argument('--check-robots', action='store_true', help='Whether to check the robots.txt rules (default: true)')
+
 
     args = parser.parse_args()
 
@@ -53,24 +55,25 @@ async def main():
     robots_rules = {}
     sitemap_url = None
     # Fetch robots.txt and check crawling rules
-    try:
-        robots_rules = await fetch_robots_txt(url)
-        logger.info("Fetched robots.txt")
+    if args.check_robots:
+        try:
+            robots_rules = await fetch_robots_txt(url)
+            logger.info("Fetched robots.txt")
 
-        sitemap_urls = robots_rules.get('sitemap', [])
-        sitemap_url = sitemap_urls[0] if sitemap_urls else None
-        if sitemap_url:
-            logger.info("Sitemap URL found: %s", sitemap_url)
-        else:
-            logger.warning("No sitemap URLs found in robots.txt.")        
-    except Exception as e:
-        logger.error("Failed to fetch robots.txt: %s", e)
+            sitemap_urls = robots_rules.get('sitemap', [])
+            sitemap_url = sitemap_urls[0] if sitemap_urls else None
+            if sitemap_url:
+                logger.info("Sitemap URL found: %s", sitemap_url)
+            else:
+                logger.warning("No sitemap URLs found in robots.txt.")        
+        except Exception as e:
+            logger.error("Failed to fetch robots.txt: %s", e)
 
     urls_to_crawl = []
 
     # Conditional crawling logic
     if args.crawl_all:
-        urls = await fetch_urls_for_crawling(url, sitemap_url, robots_rules, args.max_pages)
+        urls = await fetch_urls_for_crawling(url, sitemap_url, robots_rules, args.max_pages, args.check_robots)
         urls_to_crawl = urls if urls is not None else []  # Ensure it's an empty list if None
         if not urls_to_crawl:
             logger.warning("No URLs found to crawl.")
@@ -79,11 +82,11 @@ async def main():
             return
         await crawl_urls(urls_to_crawl, url)  # Crawl the URLs if any
     else:
-        await crawl_single_url(url, robots_rules)
+        await crawl_single_url(url, robots_rules if args.check_robots else None)
 
 
 
-async def fetch_urls_for_crawling(url, sitemap_url, robots_rules, max_pages):
+async def fetch_urls_for_crawling(url, sitemap_url, robots_rules, max_pages, check_robots):
     """Fetch URLs either from the sitemap or using the SpiderRunner."""
     try:
         if sitemap_url:
@@ -99,7 +102,7 @@ async def fetch_urls_for_crawling(url, sitemap_url, robots_rules, max_pages):
             urls = runner.run_spider(url, max_pages=max_pages)
             logger.info("Fetched URLs with scraper: %d URLs found", len(urls))
 
-        if robots_rules:
+        if check_robots and robots_rules:
             logger.info("Filtering URLs based on robots.txt rules.")
             return filter_allowed_urls(urls, robots_rules)[:max_pages]
         else:
