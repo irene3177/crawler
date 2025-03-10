@@ -10,7 +10,7 @@ The web crawling process follows a systematic approach:
    - The crawler begins by verifying the provided URL for correctness and checking for any potentially malicious data to ensure a safe crawling experience.
 
 2. **Checking for `robots.txt`**:
-   - Once the URL is validated, the crawler retrieves the `robots.txt` file for the target website. This file specifies which parts of the site should not be crawled.
+   - Once the URL is validated, the crawler retrieves the `robots.txt` file for the target website if the `--check-robots` parameter is passed. This file specifies which parts of the site should not be crawled.
 
 3. **Retrieving Sitemap Information**:
    - The crawler checks for the presence of a sitemap URL within the `robots.txt`. If a sitemap is provided, it follows that URL (in case it is not standard one as `sitemap.xml`).
@@ -62,7 +62,7 @@ Results from the crawling process are temporarily stored in a dedicated `crawled
 Run the application from the command line using the following syntax:
 
 ```bash
-python -m src.main <url> [--crawl-all] [--max-pages <number>]
+python -m src.main <url> [--crawl-all] [--max-pages <number>] [--check-robots]
 ```
 
 ## Parameters
@@ -70,14 +70,15 @@ python -m src.main <url> [--crawl-all] [--max-pages <number>]
 - `<url>`: The base URL to crawl.
 - `--crawl-all`: Optional flag to crawl all pages found in the sitemap and generate Markdown for each.
 - `--max-pages`: Set the maximum number of pages to crawl (default is 50).
+- `--check-robots`: Optional flag to check the `robots.txt` rules and filter out disallowed URLs.
 
 
 ## Example
 
-To crawl a site and generate Markdown files for all URLs from the sitemap:
+To crawl a site and generate Markdown files for all URLs from the sitemap and respect the `robots.txt` rules:
 
 ```bash
-python -m src.main https://example.com --crawl-all --max-pages 50
+python -m src.main https://example.com --crawl-all --max-pages 50 --check-robots
 ```
 
 To only crawl the specified base URL and generate a Markdown file:
