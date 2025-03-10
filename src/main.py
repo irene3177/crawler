@@ -25,25 +25,13 @@ os.makedirs(output_dir, exist_ok=True)
 
 
 
-async def main():
+
+async def run_crawler(url, crawl_all=False, max_pages=50, check_robots=True):
+
     logger.info("Application started!")
-
-    # Set up argument parsing
-    parser = argparse.ArgumentParser(description='Crawl URLs from a sitemap.')
-    parser.add_argument('url', type=str, help='The base URL to crawl')
-    parser.add_argument('--crawl-all', action='store_true',
-                        help='Whether to crawl all pages (default: false)')
-    parser.add_argument('--max-pages', type=int, default=50,
-                        help='Maximum number of pages to crawl (default: 50)')
-    parser.add_argument('--check-robots', action='store_true', help='Whether to check the robots.txt rules (default: true)')
-
-
-    args = parser.parse_args()
-
-    logger.info("Received arguments: %s", args)
-
+    
     # Validate the incoming URL
-    validation_result = check_url(args.url)
+    validation_result = check_url(url)
     if not validation_result['valid']:
         logger.error(f"Invalid URL: {validation_result['message']}")
         return
@@ -55,7 +43,7 @@ async def main():
     robots_rules = {}
     sitemap_url = None
     # Fetch robots.txt and check crawling rules
-    if args.check_robots:
+    if check_robots:
         try:
             robots_rules = await fetch_robots_txt(url)
             logger.info("Fetched robots.txt")
@@ -72,8 +60,8 @@ async def main():
     urls_to_crawl = []
 
     # Conditional crawling logic
-    if args.crawl_all:
-        urls = await fetch_urls_for_crawling(url, sitemap_url, robots_rules, args.max_pages, args.check_robots)
+    if crawl_all:
+        urls = await fetch_urls_for_crawling(url, sitemap_url, robots_rules, max_pages, check_robots)
         urls_to_crawl = urls if urls is not None else []  # Ensure it's an empty list if None
         if not urls_to_crawl:
             logger.warning("No URLs found to crawl.")
@@ -82,7 +70,7 @@ async def main():
             return
         await crawl_urls(urls_to_crawl, url)  # Crawl the URLs if any
     else:
-        await crawl_single_url(url, robots_rules if args.check_robots else None)
+        await crawl_single_url(url, robots_rules if check_robots else None)
 
 
 
@@ -133,6 +121,22 @@ async def crawl_urls(urls_to_crawl, base_url):
     except Exception as e:
         logger.error("An error occurred during crawling: %s", e)
 
+async def main():
+
+    # Set up argument parsing
+    parser = argparse.ArgumentParser(description='Crawl URLs from a sitemap.')
+    parser.add_argument('url', type=str, help='The base URL to crawl')
+    parser.add_argument('--crawl-all', action='store_true',
+                        help='Whether to crawl all pages (default: false)')
+    parser.add_argument('--max-pages', type=int, default=50,
+                        help='Maximum number of pages to crawl (default: 50)')
+    parser.add_argument('--check-robots', action='store_true', help='Whether to check the robots.txt rules (default: true)')
+
+
+    args = parser.parse_args()
+    logger.info("Received arguments: %s", args)
+
+    await run_crawler(args.url, args.crawl_all, args.max_pages, args.check_robots)
 
 if __name__ == "__main__":
     asyncio.run(main())
