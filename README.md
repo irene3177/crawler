@@ -59,10 +59,17 @@ Results from the crawling process are temporarily stored in a dedicated `crawled
 
 ## Usage
 
-Run the application from the command line using the following syntax:
+- From Command Line: Run the application from the command line using the following syntax:
 
 ```bash
 python -m src.main <url> [--crawl-all] [--max-pages <number>] [--check-robots]
+```
+
+- As a Module: You can directly import and call run_crawler() from any other module:
+
+```python
+from src.main import run_crawler
+asyncio.run(run_crawler("https://www.example.com/", crawl_all=True, max_pages=5))
 ```
 
 ## Parameters
